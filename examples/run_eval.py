@@ -1,5 +1,5 @@
 """
-Evaluation runner for the Potens RAG system.
+Evaluation runner for the FinPulse Financial RAG system.
 
 Runs queries from eval_set.json, performs retrieval on the local vector store,
 and evaluates if the target source document is present in the top-k results.
