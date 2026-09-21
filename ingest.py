@@ -55,28 +55,28 @@ def ingest_document(file_path: Path) -> int:
     suffix = file_path.suffix.lower()
     source_file = file_path.name
 
-    print(f"  📄 Processing: {source_file}")
+    print(f"  [DOC] Processing: {source_file}")
 
     if suffix == ".pdf":
         pages = parse_pdf(file_path)
         if not pages:
-            print(f"    ⚠️  No text extracted from {source_file}")
+            print(f"    [WARN] No text extracted from {source_file}")
             return 0
         chunks = chunk_document_by_pages(pages, source_file)
     elif suffix in (".txt", ".md"):
         text = parse_text_file(file_path)
         if not text.strip():
-            print(f"    ⚠️  Empty file: {source_file}")
+            print(f"    [WARN] Empty file: {source_file}")
             return 0
         chunks = chunk_document(text, {"source_file": source_file})
     else:
-        print(f"    ⚠️  Unsupported format: {suffix}")
+        print(f"    [WARN] Unsupported format: {suffix}")
         return 0
 
-    print(f"    → {len(chunks)} chunks created")
+    print(f"    -> {len(chunks)} chunks created")
 
     num_added = add_documents(chunks)
-    print(f"    ✅ {num_added} chunks stored in vector DB")
+    print(f"    [OK] {num_added} chunks stored in vector DB")
 
     return num_added
 
@@ -89,7 +89,7 @@ def ingest_all(clear_first: bool = False):
         clear_first: If True, clears existing vector store before ingestion.
     """
     if not DOCS_DIR.exists():
-        print(f"❌ Documents directory not found: {DOCS_DIR}")
+        print(f"[ERROR] Documents directory not found: {DOCS_DIR}")
         print("   Please add your documents to the 'docs/' folder.")
         return
 
@@ -100,21 +100,21 @@ def ingest_all(clear_first: bool = False):
     ]
 
     if not doc_files:
-        print(f"❌ No supported documents found in {DOCS_DIR}")
+        print(f"[ERROR] No supported documents found in {DOCS_DIR}")
         print(f"   Supported formats: {', '.join(supported_extensions)}")
         return
 
     print(f"\n{'='*60}")
-    print(f"📚 Document Ingestion Pipeline")
+    print(f"[INGEST] Document Ingestion Pipeline")
     print(f"{'='*60}")
     print(f"   Source directory: {DOCS_DIR}")
     print(f"   Documents found: {len(doc_files)}")
 
     if clear_first:
-        print("\n🗑️  Clearing existing vector store...")
+        print("\n[CLEAR] Clearing existing vector store...")
         clear_collection()
 
-    print(f"\n{'─'*60}")
+    print(f"\n{'-'*60}")
     total_chunks = 0
     for doc_file in doc_files:
         chunks = ingest_document(doc_file)
@@ -122,7 +122,7 @@ def ingest_all(clear_first: bool = False):
         print()
 
     print(f"{'='*60}")
-    print(f"✅ Ingestion complete!")
+    print(f"[OK] Ingestion complete!")
     print(f"   Total chunks stored: {total_chunks}")
     print(f"   Vector store size: {get_collection_count()} chunks")
     print(f"{'='*60}\n")

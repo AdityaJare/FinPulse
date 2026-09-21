@@ -1,255 +1,304 @@
 """
-Streamlit Web UI for the Potens Document Q&A and Contradiction Detection RAG system.
+Streamlit Web UI for FinPulse: AI Financial & Earnings Call Research Copilot.
 
 Features:
-- Main dashboard styled with modern, dark-mode-optimized components.
-- Ask Q&A Tab: Text/Voice query input, auto-language detection, expandable citations,
-  and colored confidence badges.
-- Contradict Tab: Select any two documents and run cross-document conflict analysis
-  on a specific topic.
-- Documents Tab: Visualizes ingested documents, status, chunk counts, and allows
-  initiating a manual ingestion pipeline.
+- Main dashboard styled with modern, dark-mode-optimized financial terminal theme.
+- Dedicated Workspace Views (isolated via sidebar navigation to prevent UI stacking):
+  1. Financial Q&A Copilot: Fast text query input, sample financial queries, 
+     expandable citations, and colored confidence badges.
+  2. Cross-Company Guidance Comparison: Select any two corporate filings to detect
+     conflicting guidance, differing CapEx outlooks, or margin divergences.
+  3. Filings & Transcripts Library: Visualizes ingested financial documents, chunk counts,
+     and allows uploading new quarterly reports/transcripts.
 """
 
-import streamlit as st
+import logging
 import os
 from pathlib import Path
 
-# Set page config first
-st.set_page_config(
-    page_title="Potens Operations & Policy Cockpit",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Silence harmless Streamlit file watcher warnings
+logging.getLogger("streamlit.watcher.local_sources_watcher").setLevel(logging.ERROR)
 
-# Custom premium CSS
-st.markdown("""
-<style>
-    /* Premium visual styling */
-    .stApp {
-        background-color: #0f172a;
-        color: #f1f5f9;
-    }
-    .main-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    .subtitle {
-        color: #94a3b8;
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
-    }
-    .citation-card {
-        background-color: #1e293b;
-        border-left: 4px solid #8b5cf6;
-        padding: 1rem;
-        border-radius: 0.375rem;
-        margin-bottom: 0.75rem;
-    }
-    .citation-header {
-        font-weight: 600;
-        color: #c084fc;
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
-    }
-    .citation-snippet {
-        font-style: italic;
-        color: #cbd5e1;
-        font-size: 0.85rem;
-    }
-    .confidence-high {
-        background-color: #064e3b;
-        color: #34d399;
-        padding: 0.25rem 0.6rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-    .confidence-medium {
-        background-color: #78350f;
-        color: #fbbf24;
-        padding: 0.25rem 0.6rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-    .confidence-low {
-        background-color: #7f1d1d;
-        color: #f87171;
-        padding: 0.25rem 0.6rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-</style>
-""", unsafe_allow_html=True)
-
+import streamlit as st
 import config
 import rag_engine
 import vector_store
 from ingest import ingest_all
 
-# Title Section
-st.markdown("<h1 class='main-title'>Potens Operations & Policy Cockpit</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Production-grade RAG engine for Indian policy, legal, and compliance questions.</p>", unsafe_allow_html=True)
+# Set page configuration
+st.set_page_config(
+    page_title="FinPulse | AI Financial & Earnings Call Copilot",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# API Key validation helper
+# Custom Financial Terminal Dark Theme CSS
+st.markdown("""
+<style>
+    /* Global styling */
+    .stApp {
+        background-color: #0b0f19;
+        color: #f1f5f9;
+    }
+    
+    /* Header & Branding */
+    .fin-brand-header {
+        padding: 1.2rem 1.5rem;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        border: 1px solid #312e81;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+    .main-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.3rem;
+    }
+    .subtitle {
+        color: #94a3b8;
+        font-size: 0.98rem;
+        margin-bottom: 0;
+    }
+    
+    /* Metrics summary bar */
+    .metric-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        text-align: center;
+    }
+    .metric-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #38bdf8;
+    }
+    .metric-label {
+        font-size: 0.78rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Citation cards */
+    .citation-card {
+        background-color: #111827;
+        border-left: 4px solid #38bdf8;
+        border-radius: 6px;
+        padding: 0.9rem 1.1rem;
+        margin-bottom: 0.85rem;
+        border-top: 1px solid #1f2937;
+        border-right: 1px solid #1f2937;
+        border-bottom: 1px solid #1f2937;
+    }
+    .citation-header {
+        font-weight: 600;
+        color: #67e8f9;
+        font-size: 0.88rem;
+        margin-bottom: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .citation-snippet {
+        font-style: italic;
+        color: #e2e8f0;
+        font-size: 0.86rem;
+        line-height: 1.45;
+    }
+
+    /* Confidence Badges */
+    .confidence-high {
+        background-color: #064e3b;
+        color: #34d399;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        border: 1px solid #059669;
+    }
+    .confidence-medium {
+        background-color: #78350f;
+        color: #fbbf24;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        border: 1px solid #d97706;
+    }
+    .confidence-low {
+        background-color: #7f1d1d;
+        color: #f87171;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        border: 1px solid #dc2626;
+    }
+
+    /* Prompt Chips */
+    .stButton>button {
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ── Sidebar: Workspace Navigation & API Keys ──────────────────────────────
+st.sidebar.markdown("## 📈 FinPulse Navigator")
+
+workspace_view = st.sidebar.radio(
+    "Select Workspace:",
+    [
+        "🔍 Financial Q&A Copilot",
+        "⚖️ Cross-Company Guidance Comparison",
+        "📁 Filings & Transcripts Library"
+    ],
+    index=0
+)
+
+st.sidebar.markdown("---")
+
+# API Key Validation Helper
 def check_api_key():
-    if not config.GROQ_API_KEY:
-        st.sidebar.error("⚠️ GROQ_API_KEY is not set.")
-        key_input = st.sidebar.text_input("Enter Groq API Key:", type="password")
+    active_key = config.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+    if not active_key:
+        st.sidebar.warning("⚠️ **GROQ_API_KEY is not set**")
+        st.sidebar.caption("Get a free key at [console.groq.com/keys](https://console.groq.com/keys).")
+        key_input = st.sidebar.text_input("Enter Groq API Key:", type="password", key="sidebar_key_input")
         if key_input:
-            os.environ["GROQ_API_KEY"] = key_input
-            config.GROQ_API_KEY = key_input
-            st.sidebar.success("API Key updated for session.")
+            key_clean = key_input.strip()
+            os.environ["GROQ_API_KEY"] = key_clean
+            config.GROQ_API_KEY = key_clean
+            st.sidebar.success("API Key saved!")
             st.rerun()
         return False
-    return True
+    else:
+        st.sidebar.success("✅ **LLM Engine Connected**")
+        with st.sidebar.expander("🔑 Manage API Key"):
+            new_key = st.text_input("New API Key:", type="password", key="new_key_input")
+            if st.button("Update Key") and new_key:
+                clean_new_key = new_key.strip()
+                os.environ["GROQ_API_KEY"] = clean_new_key
+                config.GROQ_API_KEY = clean_new_key
+                st.sidebar.success("Key updated!")
+                st.rerun()
+        return True
 
 has_api_key = check_api_key()
 
-# Sidebar: Corpus Info & Re-ingestion
-st.sidebar.title("📚 Policy Database")
-
-# Get list of ingested documents
+# Sidebar: Knowledge Base Stats
+st.sidebar.markdown("### 📊 Database Status")
 try:
     ingested_docs = rag_engine.get_available_documents()
     db_count = vector_store.get_collection_count()
-except Exception as e:
+except Exception:
     ingested_docs = []
     db_count = 0
 
-st.sidebar.metric(label="Total Ingested Chunks", value=db_count)
+st.sidebar.metric("Indexed Transcripts", len(ingested_docs))
+st.sidebar.metric("Total Knowledge Chunks", db_count)
 
-if ingested_docs:
-    st.sidebar.write("**Ingested Files:**")
-    for doc in ingested_docs:
-        st.sidebar.caption(f"📄 {doc}")
-else:
-    st.sidebar.warning("No documents ingested yet.")
+# Sidebar: Model Selector
+st.sidebar.markdown("### ⚙️ Engine Settings")
+selected_model = st.sidebar.selectbox(
+    "Reasoning Model:",
+    ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b", "groq/compound"],
+    index=0,
+    help="openai/gpt-oss-120b delivers top financial reasoning and strict citation extraction."
+)
+config.GROQ_MODEL = selected_model
 
-st.sidebar.markdown("---")
-st.sidebar.write("**System Ingestion Action:**")
-if st.sidebar.button("Re-run Ingestion (Clear & Index)"):
-    with st.spinner("Ingesting documents... This will take a moment."):
+if st.sidebar.button("🔄 Re-index Financial Docs"):
+    with st.spinner("Re-indexing financial transcripts in docs/..."):
         try:
             ingest_all(clear_first=True)
-            st.sidebar.success("Ingestion complete!")
+            st.sidebar.success("Re-indexing complete!")
             st.rerun()
         except Exception as e:
-            st.sidebar.error(f"Ingestion failed: {e}")
+            st.sidebar.error(f"Re-indexing failed: {e}")
 
 st.sidebar.markdown("---")
-st.sidebar.write("**Tech Stack Details:**")
-st.sidebar.caption("LLM: `llama-3.3-70b-versatile` (Groq)")
-st.sidebar.caption("Embeddings: `all-MiniLM-L6-v2` (local)")
-st.sidebar.caption("Database: ChromaDB (persistent)")
+st.sidebar.caption(f"🤖 Model: `{config.GROQ_MODEL}`")
+st.sidebar.caption("⚡ Embeddings: `all-MiniLM-L6-v2`")
+st.sidebar.caption("🎯 Reranker: `bge-reranker-base`")
 
-# Main interface tabs
-tab_ask, tab_contradict, tab_docs = st.tabs([
-    "🔍 Document Q&A", 
-    "⚖️ Cross-Doc Contradiction", 
-    "📁 Source Documents"
-])
+# ── Top Brand Header ──────────────────────────────────────────────────────
+st.markdown("""
+<div class="fin-brand-header">
+    <div class="main-title">📈 FinPulse: AI Financial & Earnings Call Research Copilot</div>
+    <div class="subtitle">Institutional-grade RAG engine for SEC 10-K/10-Q filings, quarterly earnings calls, and cross-company financial benchmarking.</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ── TAB 1: ASK A QUESTION ──────────────────────────────────────────
-with tab_ask:
-    st.subheader("Ask a Question across Ingested Policies")
-    st.caption("Auto-detects queries in English, Hindi, and other Indian languages.")
+# First-time initialization banner if DB is empty
+if db_count == 0:
+    st.info("ℹ️ **Initial Setup Required**: The financial vector database has not been indexed yet.")
+    if st.button("🚀 Initialize Financial Database (Index Built-in Transcripts)", type="primary"):
+        with st.spinner("Indexing earnings reports from docs/ directory..."):
+            try:
+                ingest_all(clear_first=True)
+                st.success("Financial documents indexed successfully!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error initializing knowledge base: {e}")
 
-    # Input Method Selection
-    input_method = st.radio("Choose Input Method:", ["Text Input", "Voice Input (Requires Microphone)"], horizontal=True)
 
-    query_input = ""
-    
-    if input_method == "Text Input":
+# ══════════════════════════════════════════════════════════════════════════
+# WORKSPACE VIEW 1: FINANCIAL Q&A COPILOT
+# ══════════════════════════════════════════════════════════════════════════
+if workspace_view == "🔍 Financial Q&A Copilot":
+    st.subheader("🔍 Financial & Earnings Call Q&A")
+    st.caption("Ask questions across quarterly earnings transcripts, SEC filings, segment revenues, and management guidance.")
+
+    # High-impact sample queries for earnings calls
+    sample_queries = [
+        "What did NVIDIA's CFO state regarding Blackwell supply and gross margins?",
+        "Compare Azure Cloud revenue growth with Google Cloud operating margins.",
+        "What are Tesla's projected 2025 CapEx and Robotaxi production targets?",
+        "How much did Apple's Services segment generate and what is the device installed base?"
+    ]
+
+    st.markdown("**💡 High-Impact Sample Queries:**")
+    sq_cols = st.columns(len(sample_queries))
+    selected_sample = None
+    for idx, (col, sq) in enumerate(zip(sq_cols, sample_queries)):
+        if col.button(sq, key=f"sample_{idx}"):
+            selected_sample = sq
+
+    if "current_query" not in st.session_state:
+        st.session_state.current_query = ""
+
+    if selected_sample:
+        st.session_state.current_query = selected_sample
+
+    # Clean, text-only search input
+    search_col, clear_col = st.columns([5, 1])
+    with search_col:
         query_input = st.text_input(
-            "Enter your query/question:",
-            placeholder="e.g., What is the penalty for failure to protect data under the DPDPA?"
+            "Enter your financial research query:",
+            value=st.session_state.current_query,
+            placeholder="e.g., What were Google Cloud's Q4 operating margins and revenue growth rate?",
+            key="financial_query_box"
         )
-    else:
-        # Web Speech API Voice input integration via Custom HTML/JS in an iframe
-        # Since streamlit runs on server side, we can use a custom JS component to capture speech
-        # and pass it back. Let's provide a convenient text area but also a small browser speech recognition helper.
-        st.info("💡 Web Speech API is supported through browser integration. Speak when prompt starts.")
-        
-        # Audio capturing helper using HTML5 & Streamlit experimental components or simple speech trigger instructions
-        # Since Python speech-recognition requires PyAudio (which fails on windows headless/containers),
-        # we will use Web Speech API in browser.
-        # Let's render a HTML5 voice input button that uses Web Speech API.
-        import streamlit.components.v1 as components
-        
-        voice_js = """
-        <div style="font-family: sans-serif; background-color: #1e293b; padding: 15px; border-radius: 8px;">
-            <button id="start-btn" style="background-color: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                🎤 Click to Speak
-            </button>
-            <p id="status" style="color: #94a3b8; font-size: 0.85rem; margin-top: 8px;">Click to start speaking...</p>
-            <script>
-                const startBtn = document.getElementById('start-btn');
-                const status = document.getElementById('status');
-                
-                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    const recognition = new SpeechRecognition();
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
-                    
-                    // Default to Indian English / Hindi detection
-                    recognition.lang = 'en-IN';
-                    
-                    startBtn.onclick = () => {
-                        recognition.start();
-                        status.textContent = 'Listening... Speak now.';
-                        startBtn.style.backgroundColor = '#ef4444';
-                    };
-                    
-                    recognition.onresult = (event) => {
-                        const transcript = event.results[0][0].transcript;
-                        status.textContent = 'Transcript: ' + transcript;
-                        startBtn.style.backgroundColor = '#3b82f6';
-                        
-                        // Send transcript back to Streamlit
-                        window.parent.postMessage({
-                            type: 'streamlit:setComponentValue',
-                            value: transcript
-                        }, '*');
-                    };
-                    
-                    recognition.onerror = (event) => {
-                        status.textContent = 'Error: ' + event.error;
-                        startBtn.style.backgroundColor = '#3b82f6';
-                    };
-                    
-                    recognition.onend = () => {
-                        if (status.textContent === 'Listening... Speak now.') {
-                            status.textContent = 'Stopped listening.';
-                            startBtn.style.backgroundColor = '#3b82f6';
-                        }
-                    };
-                } else {
-                    status.textContent = 'Speech recognition not supported in this browser.';
-                    startBtn.disabled = true;
-                }
-            </script>
-        </div>
-        """
-        st.markdown("**Web Speech API (Browser Recognition):**", unsafe_allow_html=True)
-        # Handle the component return value
-        voice_val = components.html(voice_js, height=120)
-        
-        # Standard input backup in case the iframe value isn't read by this version of Streamlit
-        query_input = st.text_input(
-            "Speech Transcript / Custom Query Text:",
-            placeholder="Type speech transcript here if voice recognition did not fill it automatically."
-        )
+    with clear_col:
+        st.write("") # vertical spacing
+        if st.button("✕ Clear", key="clear_query_btn"):
+            st.session_state.current_query = ""
+            st.rerun()
 
-    # Initialize session state for Q&A history
+    # Submit action
+    active_query = query_input.strip() if query_input else ""
+    submit_clicked = st.button("🚀 Analyze & Generate Answer", type="primary", key="submit_qa_btn")
+    trigger_search = (submit_clicked and active_query) or (selected_sample is not None and active_query)
+
+    # Session state for persistent results
     if "last_query" not in st.session_state:
         st.session_state.last_query = ""
     if "last_result" not in st.session_state:
@@ -257,170 +306,179 @@ with tab_ask:
     if "flagged" not in st.session_state:
         st.session_state.flagged = False
 
-    if st.button("Submit Query", key="ask_btn") and query_input:
+    if trigger_search and active_query:
         if not has_api_key:
-            st.error("Please add a Groq API Key first.")
+            st.error("Please configure an API Key in the sidebar first.")
         else:
-            with st.spinner("Analyzing documents & generating answer..."):
+            with st.spinner("Retrieving financial chunks, reranking evidence, and synthesizing response..."):
                 try:
-                    res = rag_engine.ask(query_input)
-                    st.session_state.last_query = query_input
+                    res = rag_engine.ask(active_query)
+                    st.session_state.last_query = active_query
                     st.session_state.last_result = res
                     st.session_state.flagged = False
                 except Exception as e:
                     err_msg = str(e).lower()
-                    if "429" in err_msg or "quota" in err_msg or "resource_exhausted" in err_msg or "resourceexhausted" in err_msg or "rate limit" in err_msg:
-                        st.error("🛑 **Groq API Rate Limit / Quota Exceeded**")
-                        st.warning(
-                            "You are currently using the Groq API. "
-                            "You have hit a rate limit (requests per minute or daily limit). "
-                            "Please wait about 30 seconds and try again, or configure a different API Key in the sidebar."
-                        )
+                    if "429" in err_msg or "rate limit" in err_msg or "quota" in err_msg:
+                        st.error("🛑 **API Rate Limit Exceeded**")
+                        st.warning("Please wait 20-30 seconds or switch model/key in the sidebar.")
                     else:
-                        st.error(f"Error executing query: {e}")
-                        st.exception(e)
+                        st.error(f"Error analyzing query: {e}")
 
-    # Render persistent last result from session state if available
+    # Render Q&A Result
     if st.session_state.last_result:
         res = st.session_state.last_result
         orig_q = st.session_state.last_query
 
-        # Language notification
-        if res["language"] != "en":
-            st.info(f"🌐 Query detected in **{res['language_name']}**. Output translated to match.")
-        
-        # Confidence scoring display
+        st.markdown("---")
+
+        # Confidence level badge
         score = res.get("confidence", 0.0)
         level = res.get("confidence_level", "low")
         if level == "high":
-            badge_html = f"<span class='confidence-high'>High Confidence ({score:.2f})</span>"
+            badge_html = f"<span class='confidence-high'>● High Confidence ({score:.2f})</span>"
         elif level == "medium":
-            badge_html = f"<span class='confidence-medium'>Medium Confidence ({score:.2f})</span>"
+            badge_html = f"<span class='confidence-medium'>▲ Medium Confidence ({score:.2f})</span>"
         else:
-            badge_html = f"<span class='confidence-low'>Low Confidence ({score:.2f})</span>"
-            
-        st.markdown(f"**Confidence Level:** {badge_html}", unsafe_allow_html=True)
-        
-        # Output Answer
-        st.markdown("### Answer")
-        st.write(res.get("answer", "No answer generated."))
-        
-        # Human in the Loop workflow (Low Confidence action)
-        if level == "low" or res.get("no_answer"):
-            st.warning("⚠️ **Low Confidence Warning:** The retrieved sources may not completely address this question or the evidence is weak. You should flag this for administrative review.")
-            
-            if not st.session_state.flagged:
-                if st.button("📥 Flag for Human Review", key="flag_btn"):
-                    status_msg = rag_engine.flag_for_review(
-                        orig_q,
-                        res["answer"],
-                        res["confidence"],
-                        res["language"]
-                    )
-                    st.session_state.flagged = True
-                    st.success(status_msg)
-            else:
-                st.info("✅ This response has been flagged and recorded to the Human Review Log.")
+            badge_html = f"<span class='confidence-low'>■ Low Confidence ({score:.2f})</span>"
 
-        # Citations
-        if res["citations"]:
-            st.markdown("### Sources Cited")
+        st.markdown(f"**Evidence Grounding:** {badge_html}", unsafe_allow_html=True)
+
+        # Answer Section
+        st.markdown("### 📝 Research Synthesis")
+        st.markdown(res.get("answer", "No answer generated."))
+
+        # Low Confidence Warning & Human Review Flag
+        if level == "low" or res.get("no_answer"):
+            st.warning("⚠️ **Low Evidence Warning:** The available financial transcripts do not contain explicit numbers or statements to fully verify this query without extrapolation.")
+            if not st.session_state.flagged:
+                if st.button("📥 Flag for Financial Analyst Review", key="flag_analyst_btn"):
+                    rag_engine.flag_for_review(orig_q, res["answer"], res["confidence"], res["language"])
+                    st.session_state.flagged = True
+                    st.success("Query and synthesis logged for analyst review.")
+            else:
+                st.info("✅ Flagged for Financial Analyst Review.")
+
+        # Grounded Sources & Citations
+        if res.get("citations"):
+            st.markdown("### 📑 Grounded Sources & Verifiable Citations")
             for cit in res["citations"]:
                 c_num = cit.get("source_number", "?")
                 c_file = cit.get("source_file", "unknown")
                 c_loc = cit.get("page_or_chunk", "unknown")
                 c_snip = cit.get("snippet", "")
-                
+
                 st.markdown(f"""
                 <div class="citation-card">
-                    <div class="citation-header">[Source {c_num}] File: {c_file} | Reference: {c_loc}</div>
+                    <div class="citation-header">
+                        <span>📄 [Source {c_num}]</span>
+                        <span><b>{c_file}</b></span>
+                        <span style="color:#94a3b8;">({c_loc})</span>
+                    </div>
                     <div class="citation-snippet">"{c_snip}"</div>
                 </div>
                 """, unsafe_allow_html=True)
-        elif res["no_answer"]:
-            st.warning("No source documents contained sufficient information to verify this query. System refused to hallucinate.")
-        else:
-            st.caption("No specific citations generated.")
+        elif res.get("no_answer"):
+            st.warning("System refused to answer to prevent financial hallucination. No verifiable numbers found.")
 
-# ── TAB 2: DETECT CONTRADICTIONS ───────────────────────────────────
-with tab_contradict:
-    st.subheader("Detect Cross-Document Inconsistencies")
-    st.write("Compare two different policy documents for contradictions, misalignments, or inconsistencies.")
-    
+
+# ══════════════════════════════════════════════════════════════════════════
+# WORKSPACE VIEW 2: CROSS-COMPANY GUIDANCE COMPARISON
+# ══════════════════════════════════════════════════════════════════════════
+elif workspace_view == "⚖️ Cross-Company Guidance Comparison":
+    st.subheader("⚖️ Cross-Company Guidance & Peer Inconsistency Detection")
+    st.write("Compare two corporate earnings calls to benchmark CapEx investments, cloud operating margins, AI roadmaps, or conflicting market outlooks.")
+
     if len(ingested_docs) < 2:
-        st.warning("Please ingest at least 2 documents to compare them.")
+        st.warning("Please index at least 2 financial documents to perform peer comparisons.")
     else:
         col1, col2 = st.columns(2)
         with col1:
-            doc1 = st.selectbox("Select First Document:", ingested_docs, key="doc1_select")
+            doc1 = st.selectbox("Select Primary Company/Filing:", ingested_docs, key="comp_doc1_select")
         with col2:
             doc2_options = [d for d in ingested_docs if d != doc1]
-            if doc2_options:
-                doc2 = st.selectbox("Select Second Document:", doc2_options, key="doc2_select")
-            else:
-                st.warning("No other documents available to compare.")
-                doc2 = None
-            
+            doc2 = st.selectbox("Select Peer Company/Filing:", doc2_options, key="comp_doc2_select") if doc2_options else None
+
         topic = st.text_input(
-            "Comparison Topic (Optional):",
-            placeholder="e.g., Penalties, Localisation rules, Data collection limitations..."
+            "Comparison Metric / Topic (Optional):",
+            placeholder="e.g., AI Infrastructure CapEx, Cloud Margins, Autonomous Driving, China Revenue Exposure..."
         )
-        
+
         if doc1 and doc2:
-            if st.button("Analyze Inconsistencies", key="contradict_btn"):
+            if st.button("⚖️ Run Peer Benchmarking Analysis", type="primary", key="run_contradict_btn"):
                 if not has_api_key:
-                    st.error("Please add a Groq API Key first.")
+                    st.error("Please configure an API Key in the sidebar first.")
                 else:
-                    with st.spinner("Analyzing document differences..."):
+                    with st.spinner("Analyzing differences, divergences, and strategic alignment between filings..."):
                         try:
                             res = rag_engine.contradict(doc1, doc2, topic)
-                            
                             if "error" in res:
                                 st.error(res["error"])
                             else:
-                                st.markdown("### Comparison Summary")
+                                st.markdown("### 📊 Executive Benchmarking Summary")
                                 st.write(res.get("summary", ""))
-                                
+
                                 if res.get("has_contradiction"):
-                                    st.markdown("### ⚠️ Contradictions Found")
+                                    st.markdown("### ⚠️ Key Divergences & Strategic Inconsistencies")
                                     for con in res.get("contradictions", []):
-                                        with st.expander(f"Topic: {con.get('topic', 'Unknown')}"):
-                                            st.markdown(f"**Document 1 ({doc1}):**")
-                                            st.info(con.get("doc1_position", ""))
-                                            st.markdown(f"**Document 2 ({doc2}):**")
-                                            st.info(con.get("doc2_position", ""))
-                                            st.markdown("**Why they conflict:**")
+                                        with st.expander(f"📌 Divergence: {con.get('topic', 'Comparison')}", expanded=True):
+                                            c_left, c_right = st.columns(2)
+                                            with c_left:
+                                                st.markdown(f"**{doc1}:**")
+                                                st.info(con.get("doc1_position", "N/A"))
+                                            with c_right:
+                                                st.markdown(f"**{doc2}:**")
+                                                st.info(con.get("doc2_position", "N/A"))
+                                            st.markdown("**Analyst Synthesis on Conflict / Divergence:**")
                                             st.warning(con.get("reasoning", ""))
                                 else:
-                                    st.success("No contradictions detected. The documents appear consistent on the topics analyzed.")
-                            
+                                    st.success("✅ Consistent Outlook: No conflicting claims or divergent guidance detected across the analyzed topics.")
                         except Exception as e:
-                            err_msg = str(e).lower()
-                            if "429" in err_msg or "quota" in err_msg or "resource_exhausted" in err_msg or "resourceexhausted" in err_msg or "rate limit" in err_msg:
-                                st.error("🛑 **Groq API Rate Limit / Quota Exceeded**")
-                                st.warning(
-                                    "You are currently using the Groq API. "
-                                    "You have hit a rate limit (requests per minute or daily limit). "
-                                    "Please wait about 30 seconds and try again, or configure a different API Key in the sidebar."
-                                )
-                            else:
-                                st.error(f"Comparison failed: {e}")
-                                st.exception(e)
+                            st.error(f"Error during comparison: {e}")
 
-# ── TAB 3: DOCUMENTS ───────────────────────────────────────────────
-with tab_docs:
-    st.subheader("Source Documents Database")
-    st.write("Current source files located in the `docs/` directory:")
-    
-    docs_path = Path("docs")
-    if docs_path.exists():
-        files = list(docs_path.iterdir())
+
+# ══════════════════════════════════════════════════════════════════════════
+# WORKSPACE VIEW 3: FILINGS & TRANSCRIPTS LIBRARY
+# ══════════════════════════════════════════════════════════════════════════
+elif workspace_view == "📁 Filings & Transcripts Library":
+    st.subheader("📁 Financial Filings & Transcripts Library")
+    st.write("Review all indexed earnings transcripts, view file sizes, and upload new corporate filings.")
+
+    docs_dir = Path(config.DOCS_DIR)
+    if docs_dir.exists():
+        files = [f for f in docs_dir.iterdir() if f.is_file() and not f.name.startswith(".")]
         if files:
-            for f in files:
-                suffix = f.suffix.lower()
-                size = f.stat().st_size
-                st.write(f"- 📄 **{f.name}** ({suffix[1:].upper()} file, {size/1024:.1f} KB)")
+            st.markdown(f"**Currently Active Financial Documents ({len(files)} files):**")
+            for f in sorted(files, key=lambda x: x.name):
+                size_kb = f.stat().st_size / 1024
+                ext = f.suffix.upper().replace(".", "")
+                st.markdown(f"- 📄 **`{f.name}`** — `{size_kb:.1f} KB` ({ext} filing)")
         else:
-            st.warning("No files found in the `docs/` folder.")
-    else:
-        st.warning("`docs/` directory does not exist.")
+            st.info("No documents found in `docs/` folder.")
+
+    st.markdown("---")
+    st.markdown("### 📤 Ingest New Quarterly Reports or Transcripts")
+    st.caption("Upload additional earnings call transcripts or SEC 10-K/10-Q documents (.txt, .pdf, or .md) to expand the knowledge base.")
+
+    uploaded_files = st.file_uploader(
+        "Upload corporate documents:",
+        type=["txt", "pdf", "md"],
+        accept_multiple_files=True
+    )
+
+    if uploaded_files:
+        if st.button(f"📥 Index {len(uploaded_files)} Uploaded Document(s)", type="primary"):
+            docs_dir.mkdir(parents=True, exist_ok=True)
+            saved_count = 0
+            for uf in uploaded_files:
+                dest = docs_dir / uf.name
+                with open(dest, "wb") as out:
+                    out.write(uf.getvalue())
+                saved_count += 1
+            
+            with st.spinner(f"Parsing and embedding {saved_count} new document(s)..."):
+                try:
+                    ingest_all(clear_first=False)
+                    st.success(f"Successfully indexed {saved_count} document(s)!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Ingestion failed: {e}")

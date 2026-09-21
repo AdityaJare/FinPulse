@@ -68,6 +68,6 @@ def rerank_chunks(query: str, chunks: list[dict], top_k: int = 5) -> list[dict]:
     # Sort candidates by score descending
     reranked = sorted(candidates, key=lambda x: x["rerank_score"], reverse=True)
     
-    print(f"⚡ Reranked {len(candidates)} candidates in {duration:.3f}s. Top score: {reranked[0]['rerank_score']:.3f}")
+    print(f"[Reranker] Reranked {len(candidates)} candidates in {duration:.3f}s. Top score: {reranked[0]['rerank_score']:.3f}")
     
     return reranked[:top_k]

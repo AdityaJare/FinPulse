@@ -1,9 +1,7 @@
 # Core
 streamlit>=1.37.0
 python-dotenv>=1.0.0
-
-# LLM
-google-generativeai>=0.7.0
+requests>=2.31.0
 
 # Embeddings & Vector Store
 sentence-transformers>=3.0.0
@@ -17,6 +15,3 @@ langdetect>=1.0.9
 
 # Chunking (using langchain's text splitter only)
 langchain-text-splitters>=0.2.0
-
-# Reranker (stretch goal)
-# sentence-transformers already covers cross-encoder models

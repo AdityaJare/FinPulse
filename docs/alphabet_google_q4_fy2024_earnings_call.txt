@@ -1,0 +1,40 @@
+ALPHABET INC. (GOOGLE) - Q4 & FULL YEAR 2024 FINANCIAL RESULTS & EARNINGS CALL
+Fourth Quarter Ended December 31, 2024
+Source: SEC Form 10-K / Alphabet Investor Relations
+
+CONSOLIDATED FINANCIAL PERFORMANCE:
+- Consolidated Q4 Revenues: $96.47 billion, an increase of 12% year-over-year (13% in constant currency) from $86.31 billion in Q4 2023.
+- Full-Year 2024 Revenues: $350.0 billion, up 14% year-over-year from $307.4 billion.
+- Q4 Operating Income: $28.52 billion, up 20% year-over-year; Operating Margin expanded to 29.6% from 27.5%.
+- Diluted EPS: $2.15 for Q4, up 31% compared to $1.64 in Q4 2023. Full-year EPS was $8.04.
+- Free Cash Flow: $18.3 billion for the quarter; total cash, cash equivalents, and marketable securities were $95.6 billion.
+
+REVENUE BY BUSINESS SEGMENTS:
+1. Google Cloud:
+   - Q4 revenue was $11.38 billion, surging 29% year-over-year from $8.79 billion.
+   - Operating Income grew dramatically to $2.09 billion, compared to $864 million in Q4 2023.
+   - Operating Margin for Google Cloud expanded to 18.4% (up from 9.8% in Q4 2023).
+   - Sundar Pichai (CEO) Commentary:
+     "Google Cloud continues to show extraordinary customer momentum. Enterprise adoption of Vertex AI grew 3x year-over-year, and our custom TPU v5e and TPU v5p processors are powering mission-critical workloads for thousands of AI companies and Fortune 500 enterprises."
+
+2. Google Services (Advertising & Subscriptions):
+   - Total Google Services revenue: $84.23 billion, up 10% year-over-year.
+   - Google Search & other: $54.03 billion, up 12% YoY, supported by AI Overviews integration across 100+ countries with 1 billion monthly users.
+   - YouTube Advertising: $10.45 billion, up 14% YoY, driven by brand and direct response advertising in YouTube Shorts and Connected TV.
+   - Google Network: $7.15 billion, down 8% YoY.
+   - Subscriptions, Platforms, and Devices: $12.60 billion, up 17% YoY, driven by YouTube TV, YouTube Music/Premium, and Google One cloud storage subscriptions.
+
+3. Other Bets (Waymo, Verily):
+   - Revenue was $450 million; operating loss was $1.15 billion.
+   - Waymo reached 150,000 paid autonomous commercial rides per week across San Francisco, Phoenix, Los Angeles, and Austin, maintaining flawless commercial safety records.
+
+CAPITAL EXPENDITURES & AI TECHNICAL INFRASTRUCTURE:
+- Anat Ashkenazi (CFO) Statement on CapEx:
+  "Capital expenditures in Q4 were $14.3 billion, driven primarily by investments in technical infrastructure including servers (accelerators and GPUs) and data center facilities. For the full year 2024, CapEx was $52.5 billion.
+  Looking ahead to full-year 2025, we anticipate CapEx will increase significantly to approximately $65 billion to $70 billion to satisfy surging demand for AI computing capacity across Google Cloud and consumer AI products."
+- AI Efficiency and Inference Cost Reductions:
+  "Through hardware-software co-design, our model serving costs for Gemini have decreased by over 70% in 18 months, enabling us to deliver AI Overviews at negligible marginal cost per query."
+
+SHAREHOLDER CAPITAL RETURN:
+- Repurchased $15.3 billion of Class A and Class C shares during Q4.
+- Paid cash dividends of $2.4 billion ($0.20 per share).

@@ -14,8 +14,9 @@ structured output.
 import json
 import re
 import time
+import os
 import requests
-from config import GROQ_API_KEY, GROQ_MODEL, GROQ_TEMPERATURE, GROQ_MAX_OUTPUT_TOKENS
+import config
 
 
 def _strip_code_fences(text: str) -> str:
@@ -34,7 +35,8 @@ def _generate_content_with_retry(prompt: str, max_retries: int = 3, initial_dela
     Returns:
         The content string from the response.
     """
-    if not GROQ_API_KEY:
+    api_key = config.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+    if not api_key:
         raise ValueError(
             "GROQ_API_KEY not found. "
             "Please set it in your .env file or input it in the sidebar. "
@@ -43,16 +45,16 @@ def _generate_content_with_retry(prompt: str, max_retries: int = 3, initial_dela
 
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
     payload = {
-        "model": GROQ_MODEL,
+        "model": config.GROQ_MODEL,
         "messages": [
             {"role": "user", "content": prompt}
         ],
-        "temperature": GROQ_TEMPERATURE,
-        "max_tokens": GROQ_MAX_OUTPUT_TOKENS
+        "temperature": config.GROQ_TEMPERATURE,
+        "max_tokens": config.GROQ_MAX_OUTPUT_TOKENS
     }
 
     delay = initial_delay
@@ -63,9 +65,21 @@ def _generate_content_with_retry(prompt: str, max_retries: int = 3, initial_dela
             # If rate limited (status 429), raise an exception to trigger the retry logic
             if response.status_code == 429:
                 raise requests.exceptions.RequestException("Rate Limit 429 Exceeded")
-            
-            response.raise_for_status()
-            
+
+            if response.status_code != 200:
+                err_detail = ""
+                try:
+                    err_json = response.json()
+                    err_detail = err_json.get("error", {}).get("message", response.text)
+                except Exception:
+                    err_detail = response.text
+                if response.status_code == 404:
+                    raise RuntimeError(
+                        f"Groq Model '{config.GROQ_MODEL}' not found (404): {err_detail}. "
+                        "Please select an available model (e.g. 'openai/gpt-oss-120b') in the sidebar."
+                    )
+                raise RuntimeError(f"Groq API Error ({response.status_code}): {err_detail}")
+
             # Parse OpenAI-compatible response body
             data = response.json()
             if "choices" in data and len(data["choices"]) > 0:
@@ -279,3 +293,20 @@ Text to translate:
     response_text = _generate_content_with_retry(prompt)
 
     return response_text.strip() if response_text else text
+
+
+def transcribe_audio(audio_bytes: bytes, filename: str = "query.wav") -> str:
+    """
+    Transcribe audio bytes using Groq Whisper API (whisper-large-v3).
+    """
+    api_key = config.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY required for audio transcription.")
+    url = "https://api.groq.com/openai/v1/audio/transcriptions"
+    headers = {"Authorization": f"Bearer {api_key}"}
+    files = {"file": (filename, audio_bytes, "audio/wav")}
+    data = {"model": "whisper-large-v3"}
+    resp = requests.post(url, headers=headers, files=files, data=data, timeout=30)
+    resp.raise_for_status()
+    return resp.json().get("text", "").strip()
+

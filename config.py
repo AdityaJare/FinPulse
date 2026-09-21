@@ -16,8 +16,22 @@ CHROMA_DB_DIR = BASE_DIR / "chroma_db"
 EXAMPLES_DIR = BASE_DIR / "examples"
 
 # ── Groq LLM ─────────────────────────────────────────────────────────────
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = "llama-3.3-70b-versatile"     # High quality, fast Llama 3.3 model
+def _get_api_key() -> str:
+    # 1. Environment variable (.env or system env)
+    key = os.getenv("GROQ_API_KEY", "")
+    if key:
+        return key
+    # 2. Streamlit Cloud Secrets (st.secrets)
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets") and "GROQ_API_KEY" in st.secrets:
+            return str(st.secrets["GROQ_API_KEY"])
+    except Exception:
+        pass
+    return ""
+
+GROQ_API_KEY = _get_api_key()
+GROQ_MODEL = "openai/gpt-oss-120b"          # High quality 120B reasoning model on Groq
 GROQ_TEMPERATURE = 0.2
 GROQ_MAX_OUTPUT_TOKENS = 2048
 

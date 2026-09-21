@@ -1,0 +1,39 @@
+TESLA, INC. - Q4 & FULL YEAR 2024 FINANCIAL HIGHLIGHTS & EARNINGS CALL
+Fourth Quarter & Full Year Ended December 31, 2024
+Source: SEC Form 10-K / Tesla Shareholder Deck
+
+EXECUTIVE SUMMARY & CONSOLIDATED FINANCIALS:
+- Total Q4 Revenue: $25.17 billion, up 3% year-over-year compared to $24.32 billion in Q4 2023.
+- Full-Year 2024 Revenue: $97.7 billion, up 1% year-over-year from $96.8 billion in 2023.
+- Q4 GAAP Operating Margin: 8.2%, up from 7.6% in the prior quarter.
+- Full-Year GAAP Net Income: $7.1 billion; Non-GAAP Net Income was $7.6 billion.
+- Cash, Cash Equivalents & Investments: Reached $36.6 billion at year-end, up $7.5 billion in 2024.
+- Full-Year Operating Cash Flow: $14.8 billion; Free Cash Flow was $3.6 billion despite record CapEx.
+
+SEGMENT BREAKDOWN & OPERATIONAL METRICS:
+1. Automotive Segment:
+   - Q4 Automotive revenues were $21.31 billion, compared to $21.56 billion in Q4 2023.
+   - Total vehicle deliveries in Q4: 495,550 vehicles (Model 3/Y: 471,930; other models including Cybertruck: 23,620).
+   - Full-year 2024 vehicle deliveries: 1,789,226 vehicles.
+   - Cost of Goods Sold (COGS) per vehicle dropped to an all-time low of under $34,500 in Q4.
+   - Automotive gross margin excluding regulatory credits was 17.2%, up from 14.6% in Q3.
+   - Regulatory credits recognized in Q4: $615 million, reflecting heightened zero-emission credit demand from traditional OEMs.
+
+2. Energy Storage & Generation:
+   - Energy business set an all-time annual record with $7.4 billion in revenue, up 22% year-over-year.
+   - Storage deployments reached a record 15.3 GWh in full-year 2024, representing 125% growth over 2023 (6.8 GWh).
+   - Megapack gross profit margin exceeded 28%, making Energy Tesla's highest-margin segment.
+   - Shanghai Megapack factory construction finished, with commercial volume deliveries planned for Q1 2025.
+
+AUTONOMOUS VEHICLES, AI & ROBOTAXI STRATEGY:
+- Elon Musk (CEO & Technoking) Statements:
+  "Autonomous driving and physical AI will define Tesla's long-term enterprise value. With FSD V13, intervention rates have improved by a factor of 10 over V12. We are confident that unsupervised Full Self-Driving will begin commercial operation in Texas and California in 2025, pending regulatory approval."
+  "Cybercab, our purpose-built autonomous Robotaxi with no steering wheel or pedals, will reach volume production in 2026 with an expected build cost below $30,000 per unit."
+- AI Compute Infrastructure:
+  "Tesla deployed its Cortex compute cluster at Gigafactory Texas, consisting of approximately 50,000 NVIDIA H100 GPUs alongside custom Dojo hardware. AI training compute increased by more than 400% during 2024 to accelerate end-to-end vision neural network training."
+
+CAPITAL EXPENDITURE & 2025 OUTLOOK:
+- Vaibhav Taneja (CFO) Commentary:
+  "CapEx in 2024 was a record $11.3 billion, driven by AI hardware, compute clusters, Shanghai Megafactory, and Cybertruck manufacturing expansion. For 2025, we expect capital expenditures between $10.0 billion and $11.0 billion."
+- Vehicle Delivery Guidance:
+  Tesla projects vehicle volume growth of 20% to 30% in 2025, supported by lower vehicle production costs, expansion into emerging markets, and the launch of more affordable next-generation vehicle models in the first half of 2025.

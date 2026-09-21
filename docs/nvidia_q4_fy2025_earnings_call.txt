@@ -1,0 +1,45 @@
+NVIDIA CORPORATION - Q4 FY2025 FINANCIAL RESULTS & EARNINGS CALL HIGHLIGHTS
+Fiscal Year 2025 Fourth Quarter Ended January 26, 2025
+Source: SEC Form 8-K / Investor Relations Transcript
+
+EXECUTIVE SUMMARY & KEY FINANCIAL METRICS:
+- Record Quarterly Revenue: $39.3 billion, up 12% from Q3 and up 78% from $22.1 billion a year ago.
+- Full-Year FY2025 Revenue: $130.5 billion, an increase of 114% from $60.9 billion in FY2024.
+- GAAP Gross Margin: 73.8% for the quarter and 75.0% for the full year.
+- Non-GAAP Gross Margin: 74.5% for the quarter and 75.8% for the full year.
+- GAAP Diluted EPS: $0.89 for the quarter, up 78% year-over-year. Full-year GAAP EPS was $3.03.
+- Cash, Cash Equivalents and Marketable Securities: $43.2 billion at fiscal year-end.
+
+SEGMENT REVENUE BREAKDOWN:
+1. Data Center:
+   - Fourth-quarter revenue reached a record $35.6 billion, up 16% sequentially and up 93% year-over-year.
+   - Full-year Data Center revenue surged 131% to a record $115.2 billion.
+   - Growth was driven by unprecedented global demand for both the NVIDIA Hopper GPU computing platform (H100 and H200) and initial customer shipments of the new Blackwell architecture.
+   - Compute revenue grew 98% year-over-year, while Data Center networking revenue reached $4.8 billion, up 62% year-over-year driven by Quantum-2 InfiniBand and the rapid expansion of the Spectrum-X Ethernet networking platform.
+
+2. Gaming & AI PC:
+   - Q4 revenue was $2.8 billion, down 14% sequentially and up 4% year-over-year.
+   - Full-year revenue was $11.3 billion, up 9% year-over-year.
+   - Introduction of GeForce RTX 50 Series GPUs powered by the Blackwell architecture, bringing desktop AI performance to creators and gamers.
+
+3. Professional Visualization:
+   - Q4 revenue was $511 million, up 5% sequentially and up 11% year-over-year.
+   - Full-year revenue grew 23% to $1.9 billion.
+
+4. Automotive & Robotics:
+   - Q4 revenue was $572 million, up 27% sequentially and up 103% year-over-year.
+   - Full-year revenue increased 55% to $1.7 billion, driven by adoption of the NVIDIA DRIVE Orin autonomous vehicle platform and DRIVE Thor design wins.
+
+OPERATIONAL DEVELOPMENTS & BLACKWELL ARCHITECTURE:
+- Jensen Huang (CEO) Remarks:
+  "The era of physical AI and agentic AI has arrived. Demand for Blackwell is staggering. We delivered over 13,000 production Blackwell sample systems to customers in Q4, and production ramp is accelerating faster than any platform in our history."
+- Colette Kress (CFO) Guidance & Margins:
+  "Blackwell systems are in full volume production. While initial ramp costs will compress gross margins into the low-70% range in early fiscal 2026, we expect gross margins to rebound to the mid-70% range as Blackwell manufacturing matures in the second half of the fiscal year."
+- China Operations & Export Regulations:
+  "Data Center sales to customers in China represented a mid-single-digit percentage of our overall Data Center revenue in Q4, well below historical levels prior to US export restrictions. We continue to comply fully with export controls while offering compliant solutions to commercial enterprise customers."
+
+FORWARD GUIDANCE FOR FIRST QUARTER FISCAL 2026:
+- Projected Revenue: $43.0 billion, plus or minus 2%.
+- Projected GAAP and Non-GAAP Gross Margins: 71.0% and 72.0%, respectively, reflecting initial Blackwell ramp costs.
+- GAAP Operating Expenses: Expected to be approximately $5.2 billion.
+- Capital Allocation: Repurchased $32.4 billion of shares and paid $980 million in cash dividends during fiscal 2025.

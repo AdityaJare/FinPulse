@@ -1,0 +1,49 @@
+APPLE INC. - Q1 FY2025 FINANCIAL RESULTS & EARNINGS CALL HIGHLIGHTS
+First Quarter Ended December 28, 2024
+Source: SEC Form 10-Q / Apple Investor Relations
+
+EXECUTIVE SUMMARY & KEY FINANCIAL HIGHLIGHTS:
+- Quarterly Revenue: $124.3 billion, an increase of 4% year-over-year compared to $119.6 billion in Q1 FY2024.
+- All-time Record Diluted EPS: $2.40, up 10% year-over-year from $2.18.
+- Gross Margin: $57.5 billion, resulting in a gross margin percentage of 46.2%, at the high end of company guidance.
+- Net Income: $36.3 billion, up 7% compared to $33.9 billion in the year-ago quarter.
+- Operating Cash Flow: Generated strong operating cash flow of $39.9 billion.
+- Active Installed Base: Surpassed an all-time high of 2.35 billion active devices globally across all product categories.
+
+REVENUE BY PRODUCT & SERVICES CATEGORIES:
+1. iPhone:
+   - Revenue was $69.1 billion, down 1% year-over-year compared to $69.7 billion.
+   - Growth was strong in emerging markets including India, Latin America, and Southeast Asia.
+   - Tim Cook (CEO) noted that iPhone 16 family powered by Apple Intelligence had faster upgrade momentum in markets where Apple Intelligence was deployed in English than previous iPhone cycles.
+
+2. Services:
+   - Revenue reached an all-time record of $26.3 billion, up 14% year-over-year from $23.1 billion.
+   - Across App Store, Cloud Services, Apple Music, Apple Pay, and AppleCare, paid subscriptions surpassed 1.05 billion.
+   - Services gross margin remained industry-leading at 74.2%.
+
+3. Mac:
+   - Revenue of $8.9 billion, an increase of 15% year-over-year from $7.8 billion, driven by strong customer reception of the redesigned M4 MacBook Pro, iMac, and Mac mini.
+
+4. iPad:
+   - Revenue was $8.1 billion, up 15% year-over-year, supported by the updated iPad Air and M4 iPad Pro line.
+
+5. Wearables, Home and Accessories:
+   - Revenue was $11.9 billion, down 1% year-over-year compared to $12.0 billion.
+
+GEOGRAPHIC PERFORMANCE & GREATER CHINA:
+- Americas revenue: $52.8 billion (up 5% YoY).
+- Europe revenue: $32.7 billion (up 7% YoY).
+- Greater China revenue: $18.5 billion, down 11% year-over-year from $20.8 billion.
+  Luca Maestri (CFO) commentary on China:
+  "While Greater China faced foreign exchange headwind of nearly 200 basis points and a highly competitive local smartphone market, our mainland China iPhone installed base reached an all-time high, with high retention rates and strong trade-in volumes."
+
+CAPITAL RETURN PROGRAM:
+- Returned nearly $30 billion to shareholders during the quarter:
+  - $3.8 billion in cash dividends.
+  - $24.8 billion through open-market repurchases of 110 million Apple shares.
+
+FORWARD OUTLOOK FOR Q2 FY2025:
+- Total company revenue expected to grow low to mid-single digits year-over-year.
+- Services revenue expected to grow double digits at a rate similar to Q1.
+- Gross margin expected to be between 46.0% and 47.0%.
+- Operating expenses expected to be between $15.2 billion and $15.4 billion.

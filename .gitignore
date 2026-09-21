@@ -33,5 +33,10 @@ build/
 *.log
 human_review_log.json
 
-# Streamlit Local Config
-.streamlit/
+# Streamlit Local Secrets (keep config.toml committed for Streamlit Cloud)
+.streamlit/secrets.toml
+
+# Archived reference files
+docs_archive/
+voice_component/
+
