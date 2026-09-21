@@ -1,14 +1,17 @@
 # 📈 FinPulse: AI Financial & Earnings Call Research Copilot
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://finpulseai.streamlit.app/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Groq Fast Inference](https://img.shields.io/badge/LLM-Groq%20LPU-orange.svg)](https://groq.com/)
 [![ChromaDB](https://img.shields.io/badge/Vector%20DB-ChromaDB-green.svg)](https://www.trychroma.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+> 🚀 **Live Demo**: **[https://finpulseai.streamlit.app/](https://finpulseai.streamlit.app/)**
+
 An institutional-grade **Retrieval-Augmented Generation (RAG)** copilot designed to analyze corporate earnings call transcripts, SEC 10-K/10-Q filings, and financial metrics.
 
 FinPulse delivers strict numerical grounding, verifiable source citations, cross-company guidance inconsistency detection, and zero-hallucination guardrails across top global technology and enterprise leaders.
+
 
 ---
 
